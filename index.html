@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>用户反馈表单</title>
+    <!-- 引入二维码生成库 -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -29,15 +31,21 @@
             display: block;
             margin-bottom: 5px;
         }
-        .form-group input[type="radio"],
-        .form-group input[type="checkbox"] {
-            margin-right: 5px;
-        }
         .form-group select,
         .form-group input[type="date"] {
             width: 100%;
             padding: 8px;
             box-sizing: border-box;
+        }
+        .radio-inline,
+        .checkbox-inline {
+            display: flex;
+            align-items: center;
+            margin-right: 10px;
+        }
+        .radio-inline input[type="radio"],
+        .checkbox-inline input[type="checkbox"] {
+            margin-right: 5px;
         }
         .rating {
             display: flex;
@@ -46,12 +54,15 @@
         }
         .rating span {
             margin-right: 5px;
+            width: 80px;
         }
         .rating .stars {
             display: flex;
             flex-grow: 1;
+            flex-direction: row-reverse; /* 反转顺序以实现CSS相邻兄弟选择器 */
+            justify-content: flex-end;
         }
-        .rating .stars input[type="checkbox"] {
+        .rating .stars input[type="radio"] {
             display: none;
         }
         .rating .stars label {
@@ -59,8 +70,16 @@
             font-size: 20px;
             margin-right: 5px;
             color: #ccc;
+            transition: color 0.2s;
+            padding: 0 2px;
         }
-        .rating .stars input[type="checkbox"]:checked + label {
+        /* 悬停时当前及之前的星星 */
+        .rating .stars label:hover,
+        .rating .stars label:hover ~ label {
+            color: gold;
+        }
+        /* 选中时当前及之前的星星 */
+        .rating .stars input:checked ~ label {
             color: gold;
         }
         .attachment {
@@ -101,15 +120,27 @@
     <div class="container">
         <div class="form-group">
             <label>单选框</label>
-            <input type="radio" name="language" value="python"> Python
-            <input type="radio" name="language" value="java"> Java
-            <input type="radio" name="language" value="cpp"> C++
+            <div class="radio-inline">
+                <input type="radio" name="language" value="python" id="python"> <label for="python">Python</label>
+            </div>
+            <div class="radio-inline">
+                <input type="radio" name="language" value="java" id="java"> <label for="java">Java</label>
+            </div>
+            <div class="radio-inline">
+                <input type="radio" name="language" value="cpp" id="cpp"> <label for="cpp">C++</label>
+            </div>
         </div>
         <div class="form-group">
             <label>多选框</label>
-            <input type="checkbox" name="device" value="mobile"> 手机
-            <input type="checkbox" name="device" value="computer"> 电脑
-            <input type="checkbox" name="device" value="web"> 网页
+            <div class="checkbox-inline">
+                <input type="checkbox" name="device" value="mobile" id="mobile"> <label for="mobile">手机</label>
+            </div>
+            <div class="checkbox-inline">
+                <input type="checkbox" name="device" value="computer" id="computer"> <label for="computer">电脑</label>
+            </div>
+            <div class="checkbox-inline">
+                <input type="checkbox" name="device" value="web" id="web"> <label for="web">网页</label>
+            </div>
         </div>
         <div class="form-group">
             <label>下拉</label>
@@ -127,21 +158,21 @@
         <div class="rating">
             <span>服务态度</span>
             <div class="stars" id="service-stars">
-                <input type="checkbox" id="service1" name="service" value="1"><label for="service1">★</label>
-                <input type="checkbox" id="service2" name="service" value="2"><label for="service2">★</label>
-                <input type="checkbox" id="service3" name="service" value="3"><label for="service3">★</label>
-                <input type="checkbox" id="service4" name="service" value="4"><label for="service4">★</label>
-                <input type="checkbox" id="service5" name="service" value="5"><label for="service5">★</label>
+                <input type="radio" id="service5" name="service" value="5"><label for="service5">★</label>
+                <input type="radio" id="service4" name="service" value="4"><label for="service4">★</label>
+                <input type="radio" id="service3" name="service" value="3"><label for="service3">★</label>
+                <input type="radio" id="service2" name="service" value="2"><label for="service2">★</label>
+                <input type="radio" id="service1" name="service" value="1"><label for="service1">★</label>
             </div>
         </div>
         <div class="rating">
             <span>发货速度</span>
             <div class="stars" id="delivery-stars">
-                <input type="checkbox" id="delivery1" name="delivery" value="1"><label for="delivery1">★</label>
-                <input type="checkbox" id="delivery2" name="delivery" value="2"><label for="delivery2">★</label>
-                <input type="checkbox" id="delivery3" name="delivery" value="3"><label for="delivery3">★</label>
-                <input type="checkbox" id="delivery4" name="delivery" value="4"><label for="delivery4">★</label>
-                <input type="checkbox" id="delivery5" name="delivery" value="5"><label for="delivery5">★</label>
+                <input type="radio" id="delivery5" name="delivery" value="5"><label for="delivery5">★</label>
+                <input type="radio" id="delivery4" name="delivery" value="4"><label for="delivery4">★</label>
+                <input type="radio" id="delivery3" name="delivery" value="3"><label for="delivery3">★</label>
+                <input type="radio" id="delivery2" name="delivery" value="2"><label for="delivery2">★</label>
+                <input type="radio" id="delivery1" name="delivery" value="1"><label for="delivery1">★</label>
             </div>
         </div>
         <div class="attachment">
@@ -149,7 +180,7 @@
             <input type="file" id="file-upload">
         </div>
         <div class="footer">
-            <button type="submit">上传文件</button>
+            <button type="submit">提交评价</button>
             <div class="qr-code">
                 < img src="" alt="QR Code" id="qr-code-image">
             </div>
@@ -157,45 +188,21 @@
     </div>
 
     <script>
-        // 星星评分功能
         document.addEventListener('DOMContentLoaded', function() {
-            // 服务态度星星
-            const serviceStars = document.querySelectorAll('#service-stars input[type="checkbox"]');
-            serviceStars.forEach(star => {
-                star.addEventListener('change', function() {
-                    // 不需要做任何特殊处理，让每个星星独立选择
-                });
+            // 生成二维码
+            const qrCodeImage = document.getElementById('qr-code-image');
+            const qrcode = new QRCode(document.createElement('div'), {
+                text: window.location.href,
+                width: 50,
+                height: 50
             });
+            qrCodeImage.src = qrcode._el.querySelector('img').src;
             
-            // 发货速度星星
-            const deliveryStars = document.querySelectorAll('#delivery-stars input[type="checkbox"]');
-            deliveryStars.forEach(star => {
-                star.addEventListener('change', function() {
-                    // 不需要做任何特殊处理，让每个星星独立选择
-                });
-            });
-            
-            // 添加星星符号到label中
+            // 为所有label添加星星符号
             document.querySelectorAll('.stars label').forEach(label => {
                 label.innerHTML = '★';
             });
         });
-
-        function generateQRCode() {
-            const qrCodeImage = document.getElementById('qr-code-image');
-            const url = window.location.href;
-            const qrCode = new QRCode(document.createElement('canvas'), {
-                text: url,
-                width: 50,
-                height: 50,
-                colorDark: '#000000',
-                colorLight: '#ffffff',
-                correctLevel: QRCode.CorrectLevel.H
-            });
-            qrCodeImage.src = qrCode.toDataURL();
-        }
-
-        window.onload = generateQRCode;
     </script>
 </body>
 </html>
