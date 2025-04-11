@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>表单页面</title>
+    <title>用户反馈表单</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -51,20 +51,16 @@
             display: flex;
             flex-grow: 1;
         }
-        .rating .stars input[type="radio"] {
+        .rating .stars input[type="checkbox"] {
             display: none;
         }
         .rating .stars label {
             cursor: pointer;
             font-size: 20px;
             margin-right: 5px;
-        }
-        .rating .stars label:before {
-            content: "\2605";
             color: #ccc;
         }
-        .rating .stars input[type="radio"]:checked ~ label:before,
-        .rating .stars input[type="radio"]:checked + label:before {
+        .rating .stars input[type="checkbox"]:checked + label {
             color: gold;
         }
         .attachment {
@@ -100,7 +96,6 @@
             height: 50px;
         }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator/qrcode.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -131,22 +126,22 @@
         </div>
         <div class="rating">
             <span>服务态度</span>
-            <div class="stars">
-                <input type="radio" name="service" value="1"><label></label>
-                <input type="radio" name="service" value="2"><label></label>
-                <input type="radio" name="service" value="3"><label></label>
-                <input type="radio" name="service" value="4"><label></label>
-                <input type="radio" name="service" value="5"><label></label>
+            <div class="stars" id="service-stars">
+                <input type="checkbox" id="service1" name="service" value="1"><label for="service1">★</label>
+                <input type="checkbox" id="service2" name="service" value="2"><label for="service2">★</label>
+                <input type="checkbox" id="service3" name="service" value="3"><label for="service3">★</label>
+                <input type="checkbox" id="service4" name="service" value="4"><label for="service4">★</label>
+                <input type="checkbox" id="service5" name="service" value="5"><label for="service5">★</label>
             </div>
         </div>
         <div class="rating">
             <span>发货速度</span>
-            <div class="stars">
-                <input type="radio" name="delivery" value="1"><label></label>
-                <input type="radio" name="delivery" value="2"><label></label>
-                <input type="radio" name="delivery" value="3"><label></label>
-                <input type="radio" name="delivery" value="4"><label></label>
-                <input type="radio" name="delivery" value="5"><label></label>
+            <div class="stars" id="delivery-stars">
+                <input type="checkbox" id="delivery1" name="delivery" value="1"><label for="delivery1">★</label>
+                <input type="checkbox" id="delivery2" name="delivery" value="2"><label for="delivery2">★</label>
+                <input type="checkbox" id="delivery3" name="delivery" value="3"><label for="delivery3">★</label>
+                <input type="checkbox" id="delivery4" name="delivery" value="4"><label for="delivery4">★</label>
+                <input type="checkbox" id="delivery5" name="delivery" value="5"><label for="delivery5">★</label>
             </div>
         </div>
         <div class="attachment">
@@ -155,44 +150,40 @@
         </div>
         <div class="footer">
             <button type="submit">上传文件</button>
-            <div class="qr-code" onclick="showQRCode()">
+            <div class="qr-code">
                 < img src="" alt="QR Code" id="qr-code-image">
             </div>
-        </div>
-        <div id="qr-code-display" style="display:none; position: absolute; top: 70px; right: 10px; width: 150px; height: 150px; background-color: white; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
-            < img src="" alt="QR Code" id="qr-code-display-image">
         </div>
     </div>
 
     <script>
-        function showQRCode() {
-            const qrCodeDisplay = document.getElementById('qr-code-display');
-            const qrCodeDisplayImage = document.getElementById('qr-code-display-image');
-            const qrCodeImage = document.getElementById('qr-code-image');
-
-            if (qrCodeDisplay.style.display === 'none') {
-                const url = window.location.href;
-                const qrCode = new QRCode(document.createElement('canvas'), {
-                    text: url,
-                    width: 150,
-                    height: 150,
-                    colorDark: '#000000',
-                    colorLight: '#ffffff',
-                    correctLevel: QRCode.CorrectLevel.H
+        // 星星评分功能
+        document.addEventListener('DOMContentLoaded', function() {
+            // 服务态度星星
+            const serviceStars = document.querySelectorAll('#service-stars input[type="checkbox"]');
+            serviceStars.forEach(star => {
+                star.addEventListener('change', function() {
+                    // 不需要做任何特殊处理，让每个星星独立选择
                 });
+            });
+            
+            // 发货速度星星
+            const deliveryStars = document.querySelectorAll('#delivery-stars input[type="checkbox"]');
+            deliveryStars.forEach(star => {
+                star.addEventListener('change', function() {
+                    // 不需要做任何特殊处理，让每个星星独立选择
+                });
+            });
+            
+            // 添加星星符号到label中
+            document.querySelectorAll('.stars label').forEach(label => {
+                label.innerHTML = '★';
+            });
+        });
 
-                qrCodeDisplayImage.src = qrCode.toDataURL();
-                qrCodeImage.src = qrCode.toDataURL();
-                qrCodeDisplay.style.display = 'block';
-            } else {
-                qrCodeDisplay.style.display = 'none';
-            }
-        }
-
-        // Generate QR code on page load
-        window.onload = function() {
-            const url = window.location.href;
+        function generateQRCode() {
             const qrCodeImage = document.getElementById('qr-code-image');
+            const url = window.location.href;
             const qrCode = new QRCode(document.createElement('canvas'), {
                 text: url,
                 width: 50,
@@ -202,7 +193,9 @@
                 correctLevel: QRCode.CorrectLevel.H
             });
             qrCodeImage.src = qrCode.toDataURL();
-        };
+        }
+
+        window.onload = generateQRCode;
     </script>
 </body>
 </html>
