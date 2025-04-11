@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>用户反馈表单</title>
-    <!-- 引入二维码生成库 -->
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -59,7 +57,7 @@
         .rating .stars {
             display: flex;
             flex-grow: 1;
-            flex-direction: row-reverse; /* 反转顺序以实现CSS相邻兄弟选择器 */
+            flex-direction: row-reverse;
             justify-content: flex-end;
         }
         .rating .stars input[type="radio"] {
@@ -73,12 +71,10 @@
             transition: color 0.2s;
             padding: 0 2px;
         }
-        /* 悬停时当前及之前的星星 */
         .rating .stars label:hover,
         .rating .stars label:hover ~ label {
             color: gold;
         }
-        /* 选中时当前及之前的星星 */
         .rating .stars input:checked ~ label {
             color: gold;
         }
@@ -86,7 +82,7 @@
             margin-bottom: 15px;
         }
         .attachment input[type="file"] {
-            display: none;
+            display: inline-block;
         }
         .attachment label {
             display: inline-block;
@@ -103,6 +99,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-top: 20px;
         }
         .qr-code {
             position: absolute;
@@ -114,10 +111,40 @@
             width: 50px;
             height: 50px;
         }
+        .success-page {
+            text-align: center;
+            padding: 40px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+            text-decoration: none;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .view-content {
+            margin-top: 20px;
+        }
+        .form-preview {
+            margin-top: 20px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
+    <!-- 表单页面 -->
+    <div id="form-page" class="container">
+        <h2>用户反馈表单</h2>
+        
         <div class="form-group">
             <label>单选框</label>
             <div class="radio-inline">
@@ -130,6 +157,7 @@
                 <input type="radio" name="language" value="cpp" id="cpp"> <label for="cpp">C++</label>
             </div>
         </div>
+        
         <div class="form-group">
             <label>多选框</label>
             <div class="checkbox-inline">
@@ -142,19 +170,22 @@
                 <input type="checkbox" name="device" value="web" id="web"> <label for="web">网页</label>
             </div>
         </div>
+        
         <div class="form-group">
             <label>下拉</label>
-            <select>
+            <select id="city-select">
                 <option>北京</option>
                 <option>上海</option>
                 <option>广州</option>
                 <option>深圳</option>
             </select>
         </div>
+        
         <div class="form-group">
             <label>日期</label>
-            <input type="date">
+            <input type="date" id="date-input">
         </div>
+        
         <div class="rating">
             <span>服务态度</span>
             <div class="stars" id="service-stars">
@@ -165,6 +196,7 @@
                 <input type="radio" id="service1" name="service" value="1"><label for="service1">★</label>
             </div>
         </div>
+        
         <div class="rating">
             <span>发货速度</span>
             <div class="stars" id="delivery-stars">
@@ -175,32 +207,102 @@
                 <input type="radio" id="delivery1" name="delivery" value="1"><label for="delivery1">★</label>
             </div>
         </div>
+        
         <div class="attachment">
-            <label for="file-upload">附件</label>
-            <input type="file" id="file-upload">
+            <label for="file-upload">附件（支持图片和文件）</label>
+            <input type="file" id="file-upload" multiple accept="image/*, .pdf, .doc, .docx">
         </div>
-        <div class="footer">
-            <button type="submit">提交评价</button>
-            <div class="qr-code">
-                < img src="" alt="QR Code" id="qr-code-image">
-            </div>
+        
+        <button type="submit" id="submit-btn">提交评价</button>
+    </div>
+
+    <!-- 成功页面 -->
+    <div id="success-page" style="display: none; text-align: center; padding: 40px;">
+        <h2>提交成功！</h2>
+        <div style="margin-top: 20px;">
+            <button class="btn" id="view-content-btn">查看已填内容</button>
         </div>
+        <div style="margin-top: 10px;">
+            <button class="btn" id="fill-again-btn">再填一次</button>
+        </div>
+    </div>
+
+    <!-- 数据预览页面 -->
+    <div id="data-preview" style="display: none; padding: 20px; border: 1px solid #ddd; margin-top: 20px;">
+        <h3>您填写的内容</h3>
+        <div id="preview-content"></div>
+        <button class="btn" id="back-btn" style="margin-top: 20px;">返回</button>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // 生成二维码
-            const qrCodeImage = document.getElementById('qr-code-image');
-            const qrcode = new QRCode(document.createElement('div'), {
-                text: window.location.href,
-                width: 50,
-                height: 50
+            // 提交表单
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.addEventListener('click', function() {
+                // 收集表单数据
+                const formData = {
+                    language: document.querySelector('input[name="language"]:checked')?.value,
+                    devices: Array.from(document.querySelectorAll('input[name="device"]:checked')).map(input => input.value),
+                    city: document.getElementById('city-select').value,
+                    date: document.getElementById('date-input').value,
+                    serviceRating: document.querySelector('input[name="service"]:checked')?.value,
+                    deliveryRating: document.querySelector('input[name="delivery"]:checked')?.value,
+                    file: document.getElementById('file-upload').value
+                };
+
+                // 存储表单数据到localStorage
+                localStorage.setItem('formData', JSON.stringify(formData));
+
+                // 隐藏表单页面，显示成功页面
+                document.getElementById('form-page').style.display = 'none';
+                document.getElementById('success-page').style.display = 'block';
             });
-            qrCodeImage.src = qrcode._el.querySelector('img').src;
-            
-            // 为所有label添加星星符号
-            document.querySelectorAll('.stars label').forEach(label => {
-                label.innerHTML = '★';
+
+            // 查看已填内容
+            const viewContentBtn = document.getElementById('view-content-btn');
+            viewContentBtn.addEventListener('click', function() {
+                // 从localStorage获取表单数据
+                const formData = JSON.parse(localStorage.getItem('formData'));
+
+                // 填充预览内容
+                const previewContent = document.getElementById('preview-content');
+                previewContent.innerHTML = `
+                    <p>选择语言: ${formData.language || '未选择'}</p >
+                    <p>选择设备: ${formData.devices.length > 0 ? formData.devices.join(', ') : '未选择'}</p >
+                    <p>选择城市: ${formData.city || '未选择'}</p >
+                    <p>选择日期: ${formData.date || '未选择'}</p >
+                    <p>服务态度评分: ${formData.serviceRating || '未评分'}</p >
+                    <p>发货速度评分: ${formData.deliveryRating || '未评分'}</p >
+                    <p>上传文件: ${formData.file || '未上传'}</p >
+                `;
+
+                // 隐藏成功页面，显示数据预览页面
+                document.getElementById('success-page').style.display = 'none';
+                document.getElementById('data-preview').style.display = 'block';
+            });
+
+            // 再填一次
+            const fillAgainBtn = document.getElementById('fill-again-btn');
+            fillAgainBtn.addEventListener('click', function() {
+                // 重置表单
+                document.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach(input => {
+                    input.checked = false;
+                });
+                document.getElementById('city-select').value = '北京';
+                document.getElementById('date-input').value = '';
+                document.getElementById('file-upload').value = '';
+
+                // 隐藏成功页面，显示表单页面
+                document.getElementById('success-page').style.display = 'none';
+                document.getElementById('form-page').style.display = 'block';
+            });
+
+            // 返回按钮
+            const backBtn = document.getElementById('back-btn');
+            backBtn.addEventListener('click', function() {
+                // 隐藏数据预览页面，显示成功页面
+                document.getElementById('data-preview').style.display = 'none';
+                document.getElementById('success-page').style.display = 'block';
             });
         });
     </script>
