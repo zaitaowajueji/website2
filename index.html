@@ -10,7 +10,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
+            height: 100vh;
             margin: 0;
             background-color: #f5f5f5;
         }
@@ -28,26 +28,22 @@
         .form-group label {
             display: block;
             margin-bottom: 5px;
-            font-weight: bold;
         }
         .form-group select,
-        .form-group input[type="date"],
-        .form-group input[type="text"],
-        .form-group textarea {
+        .form-group input[type="date"] {
             width: 100%;
             padding: 8px;
             box-sizing: border-box;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        .radio-group, .checkbox-group {
-            margin-bottom: 10px;
         }
         .radio-inline,
         .checkbox-inline {
-            display: inline-flex;
+            display: flex;
             align-items: center;
-            margin-right: 15px;
+            margin-right: 10px;
+        }
+        .radio-inline input[type="radio"],
+        .checkbox-inline input[type="checkbox"] {
+            margin-right: 5px;
         }
         .rating {
             display: flex;
@@ -55,26 +51,69 @@
             margin-bottom: 15px;
         }
         .rating span {
-            margin-right: 10px;
+            margin-right: 5px;
             width: 80px;
         }
         .rating .stars {
             display: flex;
+            flex-grow: 1;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
         }
         .rating .stars input[type="radio"] {
             display: none;
         }
         .rating .stars label {
             cursor: pointer;
-            font-size: 24px;
+            font-size: 20px;
             margin-right: 5px;
             color: #ccc;
             transition: color 0.2s;
+            padding: 0 2px;
         }
         .rating .stars label:hover,
-        .rating .stars label:hover ~ label,
+        .rating .stars label:hover ~ label {
+            color: gold;
+        }
         .rating .stars input:checked ~ label {
             color: gold;
+        }
+        .attachment {
+            margin-bottom: 15px;
+        }
+        .attachment input[type="file"] {
+            display: inline-block;
+        }
+        .attachment label {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .attachment label:hover {
+            background-color: #0056b3;
+        }
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .qr-code {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+        }
+        .qr-code img {
+            width: 50px;
+            height: 50px;
+        }
+        .success-page {
+            text-align: center;
+            padding: 40px;
         }
         .btn {
             display: inline-block;
@@ -84,23 +123,20 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s;
+            margin: 10px;
+            text-decoration: none;
         }
         .btn:hover {
             background-color: #0056b3;
         }
-        .btn-block {
-            display: block;
-            width: 100%;
+        .view-content {
+            margin-top: 20px;
         }
-        .hidden {
-            display: none;
-        }
-        #file-name {
-            margin-top: 5px;
-            font-size: 14px;
-            color: #666;
+        .form-preview {
+            margin-top: 20px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
         }
     </style>
 </head>
@@ -110,212 +146,184 @@
         <h2>用户反馈表单</h2>
         
         <div class="form-group">
-            <label for="username">姓名</label>
-            <input type="text" id="username" placeholder="请输入您的姓名">
-        </div>
-        
-        <div class="form-group">
-            <label>您最常用的编程语言</label>
-            <div class="radio-group">
-                <div class="radio-inline">
-                    <input type="radio" name="language" value="python" id="python"> 
-                    <label for="python">Python</label>
-                </div>
-                <div class="radio-inline">
-                    <input type="radio" name="language" value="java" id="java"> 
-                    <label for="java">Java</label>
-                </div>
-                <div class="radio-inline">
-                    <input type="radio" name="language" value="cpp" id="cpp"> 
-                    <label for="cpp">C++</label>
-                </div>
+            <label>单选框</label>
+            <div class="radio-inline">
+                <input type="radio" name="language" value="python" id="python"> <label for="python">Python</label>
+            </div>
+            <div class="radio-inline">
+                <input type="radio" name="language" value="java" id="java"> <label for="java">Java</label>
+            </div>
+            <div class="radio-inline">
+                <input type="radio" name="language" value="cpp" id="cpp"> <label for="cpp">C++</label>
             </div>
         </div>
         
         <div class="form-group">
-            <label>您使用的设备（多选）</label>
-            <div class="checkbox-group">
-                <div class="checkbox-inline">
-                    <input type="checkbox" name="device" value="mobile" id="mobile"> 
-                    <label for="mobile">手机</label>
-                </div>
-                <div class="checkbox-inline">
-                    <input type="checkbox" name="device" value="computer" id="computer"> 
-                    <label for="computer">电脑</label>
-                </div>
-                <div class="checkbox-inline">
-                    <input type="checkbox" name="device" value="tablet" id="tablet"> 
-                    <label for="tablet">平板</label>
-                </div>
+            <label>多选框</label>
+            <div class="checkbox-inline">
+                <input type="checkbox" name="device" value="mobile" id="mobile"> <label for="mobile">手机</label>
+            </div>
+            <div class="checkbox-inline">
+                <input type="checkbox" name="device" value="computer" id="computer"> <label for="computer">电脑</label>
+            </div>
+            <div class="checkbox-inline">
+                <input type="checkbox" name="device" value="web" id="web"> <label for="web">网页</label>
             </div>
         </div>
         
         <div class="form-group">
-            <label for="city-select">所在城市</label>
+            <label>下拉</label>
             <select id="city-select">
-                <option value="">请选择城市</option>
-                <option value="beijing">北京</option>
-                <option value="shanghai">上海</option>
-                <option value="guangzhou">广州</option>
-                <option value="shenzhen">深圳</option>
-                <option value="other">其他</option>
+                <option>北京</option>
+                <option>上海</option>
+                <option>广州</option>
+                <option>深圳</option>
             </select>
         </div>
         
         <div class="form-group">
-            <label for="date-input">反馈日期</label>
+            <label>日期</label>
             <input type="date" id="date-input">
-        </div>
-        
-        <div class="form-group">
-            <label for="feedback">详细反馈</label>
-            <textarea id="feedback" rows="4" placeholder="请描述您的问题或建议"></textarea>
         </div>
         
         <div class="rating">
             <span>服务态度</span>
             <div class="stars" id="service-stars">
-                <input type="radio" id="service5" name="service" value="5">
-                <label for="service5">★</label>
-                <input type="radio" id="service4" name="service" value="4">
-                <label for="service4">★</label>
-                <input type="radio" id="service3" name="service" value="3">
-                <label for="service3">★</label>
-                <input type="radio" id="service2" name="service" value="2">
-                <label for="service2">★</label>
-                <input type="radio" id="service1" name="service" value="1">
-                <label for="service1">★</label>
+                <input type="radio" id="service5" name="service" value="5"><label for="service5">★</label>
+                <input type="radio" id="service4" name="service" value="4"><label for="service4">★</label>
+                <input type="radio" id="service3" name="service" value="3"><label for="service3">★</label>
+                <input type="radio" id="service2" name="service" value="2"><label for="service2">★</label>
+                <input type="radio" id="service1" name="service" value="1"><label for="service1">★</label>
             </div>
         </div>
         
-        <div class="form-group">
-            <label for="file-upload">上传附件</label>
-            <input type="file" id="file-upload" style="display: none;" multiple accept="image/*, .pdf, .doc, .docx">
-            <button type="button" class="btn" onclick="document.getElementById('file-upload').click()">选择文件</button>
-            <div id="file-name">未选择文件</div>
+        <div class="rating">
+            <span>发货速度</span>
+            <div class="stars" id="delivery-stars">
+                <input type="radio" id="delivery5" name="delivery" value="5"><label for="delivery5">★</label>
+                <input type="radio" id="delivery4" name="delivery" value="4"><label for="delivery4">★</label>
+                <input type="radio" id="delivery3" name="delivery" value="3"><label for="delivery3">★</label>
+                <input type="radio" id="delivery2" name="delivery" value="2"><label for="delivery2">★</label>
+                <input type="radio" id="delivery1" name="delivery" value="1"><label for="delivery1">★</label>
+            </div>
         </div>
         
-        <button type="button" id="submit-btn" class="btn btn-block">提交评价</button>
+        <div class="attachment">
+            <label for="file-upload">附件（支持图片和文件）</label>
+            <input type="file" id="file-upload" multiple accept="image/*, .pdf, .doc, .docx">
+        </div>
+        
+        <button type="submit" id="submit-btn">提交评价</button>
     </div>
 
     <!-- 成功页面 -->
-    <div id="success-page" class="container hidden">
+    <div id="success-page" style="display: none; text-align: center; padding: 40px;">
         <h2>提交成功！</h2>
-        <p>感谢您的反馈，我们会尽快处理。</p>
-        <div style="margin-top: 30px;">
+        <div style="margin-top: 20px;">
             <button class="btn" id="view-content-btn">查看已填内容</button>
+        </div>
+        <div style="margin-top: 10px;">
             <button class="btn" id="fill-again-btn">再填一次</button>
         </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // 文件上传显示文件名
-            const fileUpload = document.getElementById('file-upload');
-            const fileName = document.getElementById('file-name');
-            
-            fileUpload.addEventListener('change', function() {
-                if (this.files.length > 0) {
-                    const names = Array.from(this.files).map(f => f.name);
-                    fileName.textContent = `已选择: ${names.join(', ')}`;
-                } else {
-                    fileName.textContent = '未选择文件';
-                }
-            });
-
             // 提交表单
             const submitBtn = document.getElementById('submit-btn');
             submitBtn.addEventListener('click', function() {
                 // 收集表单数据
                 const formData = {
-                    username: document.getElementById('username').value,
                     language: document.querySelector('input[name="language"]:checked')?.value,
                     devices: Array.from(document.querySelectorAll('input[name="device"]:checked')).map(input => input.value),
                     city: document.getElementById('city-select').value,
                     date: document.getElementById('date-input').value,
-                    feedback: document.getElementById('feedback').value,
                     serviceRating: document.querySelector('input[name="service"]:checked')?.value,
-                    files: fileUpload.files.length > 0 ? Array.from(fileUpload.files).map(f => f.name) : []
+                    deliveryRating: document.querySelector('input[name="delivery"]:checked')?.value,
+                    file: document.getElementById('file-upload').value
                 };
 
-                // 存储到localStorage
-                localStorage.setItem('feedbackFormData', JSON.stringify(formData));
+                // 存储表单数据到localStorage
+                localStorage.setItem('formData', JSON.stringify(formData));
 
-                // 切换到成功页面
-                document.getElementById('form-page').classList.add('hidden');
-                document.getElementById('success-page').classList.remove('hidden');
+                // 隐藏表单页面，显示成功页面
+                document.getElementById('form-page').style.display = 'none';
+                document.getElementById('success-page').style.display = 'block';
             });
 
-            // 查看已填内容
-            document.getElementById('view-content-btn').addEventListener('click', function() {
-                const formData = JSON.parse(localStorage.getItem('feedbackFormData')) || {};
+            // 查看已填内容 - 在新标签页打开
+            const viewContentBtn = document.getElementById('view-content-btn');
+            viewContentBtn.addEventListener('click', function() {
+                // 从localStorage获取表单数据
+                const formData = JSON.parse(localStorage.getItem('formData'));
                 
-                // 创建新窗口
-                const newWindow = window.open('', '_blank');
-                if (newWindow) {
-                    newWindow.document.write(`
-                        <!DOCTYPE html>
-                        <html>
-                        <head>
-                            <title>您提交的反馈</title>
-                            <style>
-                                body { font-family: Arial, sans-serif; padding: 20px; }
-                                h2 { color: #333; }
-                                .feedback-item { margin-bottom: 15px; }
-                                .feedback-label { font-weight: bold; }
-                                .close-btn { 
-                                    padding: 8px 16px; 
-                                    background: #007bff; 
-                                    color: white; 
-                                    border: none; 
-                                    border-radius: 4px; 
-                                    cursor: pointer; 
-                                    margin-top: 20px;
-                                }
-                            </style>
-                        </head>
-                        <body>
-                            <h2>您提交的反馈内容</h2>
-                            <div class="feedback-item">
-                                <span class="feedback-label">姓名:</span> ${formData.username || '未填写'}
-                            </div>
-                            <div class="feedback-item">
-                                <span class="feedback-label">编程语言:</span> ${formData.language || '未选择'}
-                            </div>
-                            <div class="feedback-item">
-                                <span class="feedback-label">使用设备:</span> ${formData.devices?.join(', ') || '未选择'}
-                            </div>
-                            <div class="feedback-item">
-                                <span class="feedback-label">城市:</span> ${formData.city || '未选择'}
-                            </div>
-                            <div class="feedback-item">
-                                <span class="feedback-label">日期:</span> ${formData.date || '未选择'}
-                            </div>
-                            <div class="feedback-item">
-                                <span class="feedback-label">反馈内容:</span> ${formData.feedback || '未填写'}
-                            </div>
-                            <div class="feedback-item">
-                                <span class="feedback-label">服务评分:</span> ${formData.serviceRating ? '★'.repeat(formData.serviceRating) : '未评分'}
-                            </div>
-                            <div class="feedback-item">
-                                <span class="feedback-label">上传文件:</span> ${formData.files?.join(', ') || '无'}
-                            </div>
-                            <button class="close-btn" onclick="window.close()">关闭</button>
-                        </body>
-                        </html>
-                    `);
-                    newWindow.document.close();
-                } else {
-                    alert('无法打开新窗口，请允许弹出窗口或手动复制链接。');
-                }
+                // 创建预览页面的HTML内容
+                const previewContent = `
+                    <!DOCTYPE html>
+                    <html lang="zh-CN">
+                    <head>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <title>已填内容预览</title>
+                        <style>
+                            body {
+                                font-family: Arial, sans-serif;
+                                padding: 20px;
+                                max-width: 600px;
+                                margin: 0 auto;
+                            }
+                            h3 {
+                                color: #333;
+                                border-bottom: 1px solid #eee;
+                                padding-bottom: 10px;
+                            }
+                            p {
+                                margin: 10px 0;
+                                padding: 5px;
+                                background-color: #f9f9f9;
+                                border-radius: 4px;
+                            }
+                            .btn {
+                                display: inline-block;
+                                padding: 10px 20px;
+                                background-color: #007bff;
+                                color: white;
+                                border: none;
+                                border-radius: 5px;
+                                cursor: pointer;
+                                margin-top: 20px;
+                                text-decoration: none;
+                            }
+                            .btn:hover {
+                                background-color: #0056b3;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <h3>您填写的内容</h3>
+                        <p>选择语言: ${formData.language || '未选择'}</p>
+                        <p>选择设备: ${formData.devices.length > 0 ? formData.devices.join(', ') : '未选择'}</p>
+                        <p>选择城市: ${formData.city || '未选择'}</p>
+                        <p>选择日期: ${formData.date || '未选择'}</p>
+                        <p>服务态度评分: ${formData.serviceRating || '未评分'}</p>
+                        <p>发货速度评分: ${formData.deliveryRating || '未评分'}</p>
+                        <p>上传文件: ${formData.file || '未上传'}</p>
+                        <button class="btn" onclick="window.close()">关闭</button>
+                    </body>
+                    </html>
+                `;
+                
+                // 在新标签页打开预览
+                const previewWindow = window.open('', '_blank');
+                previewWindow.document.open();
+                previewWindow.document.write(previewContent);
+                previewWindow.document.close();
             });
 
-            // 再填一次
-            document.getElementById('fill-again-btn').addEventListener('click', function() {
-                const newWindow = window.open(window.location.href, '_blank');
-                if (!newWindow || newWindow.closed) {
-                    alert('请允许弹出窗口，或手动复制链接到新标签页打开。');
-                }
+            // 再填一次 - 在新标签页打开新表单
+            const fillAgainBtn = document.getElementById('fill-again-btn');
+            fillAgainBtn.addEventListener('click', function() {
+                window.open(window.location.href, '_blank');
             });
         });
     </script>
